@@ -6,24 +6,36 @@
  */
 
 const express  = require('express');
-const path     = require('path'); // 👈 هذا السطر مهم جداً (دليل الخرائط)
+const path     = require('path');
 const app      = express();
 const http     = require('http').createServer(app);
 const io       = require('socket.io')(http);
 
-// 👈 هذي الأسطر تجبر السيرفر يتعرف على ملفاتك وين ما كانت
+// السماح بقراءة الملفات سواء كانت مع السيرفر أو داخل مجلد public
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// 👈 هذا الأمر يحل مشكلة Cannot GET / للأبد
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'), (err) => {
-        if (err) {
-            res.sendFile(path.join(__dirname, 'public', 'index.html'));
-        }
-    });
+// توجيه أي زائر يدخل الرابط لصفحة اللعبة مباشرة (مضاد للشاشة البيضاء)
+app.get('*', (req, res) => {
+  const rootPath = path.join(__dirname, 'index.html');
+  const publicPath = path.join(__dirname, 'public', 'index.html');
+
+  res.sendFile(rootPath, (err) => {
+    if (err) {
+      res.sendFile(publicPath);
+    }
+  });
 });
+
+// ─────────────────────────────────────────────────────────────
+//  بيانات عامة
+// ─────────────────────────────────────────────────────────────
+let weeklyBest  = { name: "لا يوجد", score: 0 };
+const globalChats = [];
+const rooms       = {};
+
+// ... (باقي الكود ينزل تحت زي ما هو لا تلمسه) ...
 // ─────────────────────────────────────────────────────────────
 //  ردود الزبّة
 // ─────────────────────────────────────────────────────────────
@@ -859,3 +871,4 @@ const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => { 
     console.log(`🚀 محرك SHAR يعمل على بورت ${PORT} 🚀`);
 });
+
