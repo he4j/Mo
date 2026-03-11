@@ -852,4 +852,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => console.log(`🚀 محرك SHAR يعمل على بورت ${PORT} — ${GRAND_DIWAN.length} سؤال جاهز!`));
+http.listen(PORT, '0.0.0.0', () => { 
+    console.log(`🚀 محرك SHAR يعمل على بورت ${PORT} 🚀`);
+});
