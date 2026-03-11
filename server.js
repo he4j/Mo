@@ -6,20 +6,24 @@
  */
 
 const express  = require('express');
+const path     = require('path'); // 👈 هذا السطر مهم جداً (دليل الخرائط)
 const app      = express();
 const http     = require('http').createServer(app);
 const io       = require('socket.io')(http);
 
-app.use(express.static('public'));
+// 👈 هذي الأسطر تجبر السيرفر يتعرف على ملفاتك وين ما كانت
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// ─────────────────────────────────────────────────────────────
-//  بيانات عامة
-// ─────────────────────────────────────────────────────────────
-let weeklyBest  = { name: "لا يوجد", score: 0 };
-const globalChats = [];
-const rooms       = {};
-
+// 👈 هذا الأمر يحل مشكلة Cannot GET / للأبد
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        }
+    });
+});
 // ─────────────────────────────────────────────────────────────
 //  ردود الزبّة
 // ─────────────────────────────────────────────────────────────
